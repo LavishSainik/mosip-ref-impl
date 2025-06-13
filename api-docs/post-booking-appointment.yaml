@@ -1,0 +1,124 @@
+openapi: 3.0.1
+info:
+  title: Pre-Registration-Booking
+  description: Pre-Registration-Booking Service
+  license:
+    name: Mosip
+    url: https://docs.mosip.io/platform/license
+  version: '1.0'
+servers:
+  - url: https://api-internal.collab.mosip.net/preregistration/v1
+    description: For Swagger
+tags:
+  - name: booking-controller
+    description: Booking Controller
+paths:
+  /appointment:
+    post:
+      tags:
+        - booking-controller
+      summary: Booking Appointment
+      description: Book multiple appointments using pre-registration IDs.
+      operationId: bookMultiAppoinment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MainRequestDTOMultiBookingRequest'
+        required: true
+      responses:
+        '200':
+          description: Appointment Booked Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MainResponseDTOBookingStatus'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+components:
+  schemas:
+    MainRequestDTOMultiBookingRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the request payload.
+        version:
+          type: string
+          description: API version number.
+        requesttime:
+          type: string
+          format: date-time
+          description: Timestamp of when the request was made.
+        request:
+          $ref: '#/components/schemas/MultiBookingRequest'
+          description: Container for booking request details.
+    MultiBookingRequest:
+      type: object
+      properties:
+        bookingRequest:
+          type: array
+          description: List of individual booking requests.
+          items:
+            $ref: '#/components/schemas/MultiBookingRequestDTO'
+    MultiBookingRequestDTO:
+      type: object
+      properties:
+        preRegistrationId:
+          type: string
+          description: Pre-registration ID of the user.
+        registration_center_id:
+          type: string
+          description: ID of the registration center for the appointment.
+        appointment_date:
+          type: string
+          description: Date of the appointment (YYYY-MM-DD).
+        time_slot_from:
+          type: string
+          description: Start time of the time slot (HH:MM).
+        time_slot_to:
+          type: string
+          description: End time of the time slot (HH:MM).
+    MainResponseDTOBookingStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the response.
+        version:
+          type: string
+          description: API version.
+        responsetime:
+          type: string
+          description: Timestamp when the response was generated.
+        response:
+          type: object
+          description: Booking status information.
+          properties:
+            bookingStatusResponse:
+              type: array
+              description: Array containing the booking status messages.
+              items:
+                type: object
+                properties:
+                  bookingMessage:
+                    type: string
+                    description: Message related to the booking status.
+        errors:
+          type: array
+          description: List of error objects if any issues occurred.
+          items:
+            type: object
+            properties:
+              errorCode:
+                type: string
+                description: Error code for the failure.
+              message:
+                type: string
+                description: Descriptive message for the error.
